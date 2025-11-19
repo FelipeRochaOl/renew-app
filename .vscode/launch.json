@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach: renew-api (Docker)",
+      "address": "localhost",
+      "port": 9229,
+      "restart": true,
+      "localRoot": "${workspaceFolder}/renew-api",
+      "remoteRoot": "/usr/src/app",
+      "protocol": "inspector",
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceFolder}/renew-api/dist/**/*.js"
+      ],
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Up + Attach API (Docker)",
+      "configurations": [
+        "Attach: renew-api (Docker)"
+      ],
+      "preLaunchTask": "docker-compose: up api"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "./dist-test",
+    "sourceMap": false,
+    "rootDir": "."
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "**/*.e2e.ts",
+    "helper.ts",
+    "db.ts"
+  ]
+}

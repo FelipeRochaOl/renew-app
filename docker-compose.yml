@@ -1,0 +1,70 @@
+services:
+  mongo:
+    image: mongo:6
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+      MONGO_INITDB_DATABASE: renovarapp
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - renovarapp-net
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "bash",
+          "-c",
+          "echo 'db.runCommand({ ping: 1 })' | mongosh --quiet || exit 1",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  api:
+    build:
+      context: ./renew-api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    env_file:
+      - ./renew-api/.env
+    ports:
+      - "3333:3333"
+      - "9229:9229"
+    volumes:
+      - ./renew-api:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - renovarapp-net
+
+  app:
+    build:
+      context: ./renew-app
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - api
+    env_file:
+      - ./renew-app/.env
+    ports:
+      - "19000:19000" # Metro bundler
+      - "19001:19001" # Expo dev tools (websocket)
+      - "19002:19002" # Expo devtools web
+    volumes:
+      - ./renew-app:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - renovarapp-net
+
+networks:
+  renovarapp-net:
+    driver: bridge
+
+volumes:
+  mongo_data:
